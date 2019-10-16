@@ -3,6 +3,11 @@ uuid = "d5a53468-f043-11e9-1d5f-3740ac8476a4"
 authors = ["Arseniy Tsipenyuk <arseniy.tsipenyuk@gmail.com>"]
 version = "0.1.0"
 
+[deps]
+FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+
 [compat]
 julia = "1"
 

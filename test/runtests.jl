@@ -2,5 +2,5 @@ using FPRS
 using Test
 
 @testset "FPRS.jl" begin
-    # Write your own tests here.
+    include("test-utilities.jl")
 end
