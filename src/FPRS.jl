@@ -9,5 +9,6 @@ export
     randBall
 
 include("utilities.jl")
+include("densities.jl")
 
 end # module
