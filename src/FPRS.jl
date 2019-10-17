@@ -4,11 +4,13 @@ using FFTW
 using LinearAlgebra
 using Random
 
+include("utilities.jl")
+include("densities.jl")
+
 export
     # Utilities
     randBall
-
-include("utilities.jl")
-include("densities.jl")
+    # Densities
+    genGauss
 
 end # module
