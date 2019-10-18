@@ -122,3 +122,12 @@ function genGauss(aG, mG, AG;
 end
 
 
+#function genRandGauss(nGauss;
+#                      varmean = nothing,
+#                      seed = nothing,
+#                      suppRad = 0.5,
+#                      suppShape = "box"),
+#    (aG, mG, AG;
+#                      xmin=nothing, xmax=nothing, nPts=nothing)
+#end
+#
