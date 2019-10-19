@@ -48,3 +48,21 @@
     g = FPRS.genGauss(aG, mG, AG);
     @test abs.(sum(g) - 627.7968551738583) < 67.0^3 * eps()
 end
+
+# genRandGauss
+@testset "genRandGauss" begin
+    # 1D
+    g = FPRS.genRandGauss(nGauss = 50, nPts=[512], AGmin=100, AGmax=1000, mGrad=0.5, randSeed=0, suppShape="box")
+    @test abs.(sum(g) - 63.77852000489939) < 512 * eps()
+    
+    # 2D
+    g = FPRS.genRandGauss(nGauss = 10, nPts=[51,51], mGrad=0.5, randSeed=0, suppShape="ball")
+    @test abs.(sum(g) - 210.31303142418054) < 51^2 * eps()
+
+    # 3D
+    g = FPRS.genRandGauss(nGauss = 10, nPts=[31,31,21], randSeed=0, suppShape="ball")
+    @test abs.(sum(g) - 200.71210294764373) < 31^2 * 21 * eps()
+
+    # Reverse-engineered. (?) Why not ArgumentError 
+    @test_throws MethodError FPRS.genGauss(suppShape = 1);
+end

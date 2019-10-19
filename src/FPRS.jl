@@ -10,6 +10,7 @@ include("densities.jl")
 export
     # Utilities
     randBall
+    randRotationMatrix
     # Densities
     genGauss
 

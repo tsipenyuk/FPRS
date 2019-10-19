@@ -4,8 +4,12 @@ function genGauss(aG, mG, AG;
     """
     Calculate sum of Gaussians given amplitudes, means, and covariance matrices.
 
-    Evaluates nGaussian Gaussian functions on a grid, returns their sum. 
+    Evaluates nGaussian Gaussian functions on a grid, returns their sum.
     The grid models space with nPts discretization points along nDims dimensions.
+    LaTeX pseudocode:
+    
+       sum_i aG_i * exp( - (x-mG_i)' * AG_i * (x-mG_i)).
+    
 
     Arguments nGauss and nDims are not declared explicitely, but calculated from
     means vector mG, see below.
@@ -122,12 +126,124 @@ function genGauss(aG, mG, AG;
 end
 
 
-#function genRandGauss(nGauss;
-#                      varmean = nothing,
-#                      seed = nothing,
-#                      suppRad = 0.5,
-#                      suppShape = "box"),
-#    (aG, mG, AG;
-#                      xmin=nothing, xmax=nothing, nPts=nothing)
-#end
-#
+function genRandGauss(; nGauss=30,
+                      nPts = [67; 67],
+                      aGmin = 0.2,
+                      aGmax = 2.0,
+                      mGrad = 0.8,
+                      AGmin = 10,
+                      AGmax = 200,
+                      randSeed = nothing,
+                      suppShape = "ball")
+    """
+    Evaluate sum of Gaussians with random amplitudes, means, and covariance matrices.
+
+    Generates random amplitudes, means, and covariance matrices, and calls
+    genGauss function. Dimension is determined from the size of nPts arguments.
+
+    # Keyword Arguments
+    - `nGauss::Int64`: number of Gaussians
+    - `nPts::Array{Int64}`: number of discr. pts along each dimension
+    - `aGmin::Float64`
+    - `aGmax::Float64` : 
+          amplitudes are uniformely distributed between these values.
+    - `mGrad::Float64` : 
+          means (each coordinate) are  uniformely distributed between 
+          -mGrad and mGrad, if suppShape = "box"
+    - `mGrad::Float64` : 
+          means are  uniformely distributed in the nDim-dimensional 
+          ball with radius mGrad, if suppShape = "ball"
+    - `AGmin::Float64`
+    - `AGmax::Float64` : 
+          eigenvalues of covariance matrices are uniformely distributed 
+          between these values. AGmin small --> slowly decaying gaussians
+          (try AGmin = 10, AGmax = 15). AGmin large --> fast decaying gaussians
+          (try AGmin = 500, AGmax = 1000).
+    - `randSeed::Int64` : set random seed.
+    - `suppShape::String` : "ball" or "box", see mGrad variable above.
+
+    # Examples
+    ```jldoctest
+    julia> # Default 2D density with 30 Gaussians
+    julia> g = genRandGauss();
+    julia> # With specific random seed:
+    julia> g = genRandGauss(randSeed = 0);
+    julia> # The same with better resolution:
+    julia> g = genRandGauss(randSeed = 0, nPts=[512,512]);
+    julia> # One-dimensional, 10 Gaussians, smaller support
+    julia> FPRS.genRandGauss(nGauss = 10, nPts=[512], AGmin=30, AGmax=45, mGrad=0.5, randSeed=0)
+    julia> # 50 Gaussians, three-dimensional, with means in a box and faster decay
+    julia> g = FPRS.genRandGauss(nGauss = 50, nPts=[80,80,80], AGmin=100, AGmax=1000, mGrad=0.5, randSeed=0, suppShape="box")
+    julia> # E.g., plot after integrating with >>> heatmap(sum(g,dims=3)[:,:,1])
+    ```
+    """
+
+    if suppShape != "box" && suppShape != "ball"
+         throw(ArgumentError("suppShape, $(suppShape), must be either 'box' or 'ball'"))
+    end
+    
+    # Convenience variables
+    nDims = length(nPts)
+
+    if randSeed == nothing
+        seedVal = Random.seed!()
+    else
+        seedVal = Int(randSeed)
+        Random.seed!(seedVal)
+    end
+
+    aG = (aGmax-aGmin) * rand(nGauss) .+ aGmin
+
+    if nDims == 1
+        mG = zeros(1,nGauss);
+        mG[1,:] = 2.0 * mGrad * rand(nGauss) .- mGrad
+        AG = zeros(1,1,nGauss);
+        AG[1,1,:] = (AGmax-AGmin) * rand(nGauss) .+ AGmin
+    end
+
+    if nDims == 2
+        # Generate means of Gaussians
+        if suppShape == "box"
+            mG = zeros(2,nGauss)
+            mG[1,:] = 2.0 * mGrad * rand(nGauss) .- mGrad
+            mG[2,:] = 2.0 * mGrad * rand(nGauss) .- mGrad
+        elseif suppShape == "ball"
+            mG = mGrad * randBall(2,nGauss)
+        end
+        
+        # Generate variance matrices of Gaussians
+        AG = zeros(2,2,nGauss);
+        for iG = 1:nGauss
+            # Prepare random rotation matrix (SO(2))
+            theta = 2. * pi * rand();
+            Omx = [cos(theta) -sin(theta); sin(theta) cos(theta)]
+            Dmx = Diagonal((AGmax-AGmin) * rand(2) .+ AGmin)
+            Amx = transpose(Omx) * Dmx * Omx
+            AG[:,:,iG] = Amx[:,:]
+        end
+    end
+
+    if nDims == 3
+        # Generate means of Gaussians
+        if suppShape == "box"
+            mG = zeros(3,nGauss)
+            mG[1,:] = 2.0 * mGrad * rand(nGauss) .- mGrad
+            mG[2,:] = 2.0 * mGrad * rand(nGauss) .- mGrad
+            mG[3,:] = 2.0 * mGrad * rand(nGauss) .- mGrad
+        elseif suppShape == "ball"
+            mG = mGrad * randBall(3,nGauss)
+        end
+        
+        # Generate variance matrices of Gaussians
+        AG = zeros(3,3,nGauss);
+        for iG = 1:nGauss
+            # Prepare random rotation matrix (SO(2))
+            Omx = randRotationMatrix()
+            Dmx = Diagonal((AGmax-AGmin) * rand(3) .+ AGmin)
+            Amx = transpose(Omx) * Dmx * Omx
+            AG[:,:,iG] = Amx[:,:]
+        end
+    end
+    
+    return genGauss(aG, mG, AG; nPts=nPts)
+end
