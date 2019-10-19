@@ -130,9 +130,9 @@ function genRandGauss(; nGauss=30,
                       nPts = [67; 67],
                       aGmin = 0.2,
                       aGmax = 2.0,
-                      mGrad = 0.8,
-                      AGmin = 10,
-                      AGmax = 200,
+                      mGrad = 0.6,
+                      AGmin = 100,
+                      AGmax = 800,
                       randSeed = nothing,
                       suppShape = "ball")
     """
