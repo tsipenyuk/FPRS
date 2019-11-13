@@ -73,6 +73,6 @@ end
 
 "Hard sparsity energy functional"
 function eTn(g, suppSize)
-    res = 0.5 * sum((g - pS0(g, suppSize)).^2)
+    res = 0.5 * sum((g - pTn(g, suppSize)).^2)
 end
 
