@@ -22,6 +22,6 @@ using FFTW
     @test FPRS.eM0(b,sqrtI) == 1.0
     @test FPRS.eP(a) == 0.5
     @test FPRS.eTa(a, 1.6) == 1.5
-    @test FPRS.eTn(a, 1) == 0.5
-    @test FPRS.eTn(a, 3) == 1.5
+    @test FPRS.eTn(a, 1) == 1.5
+    @test FPRS.eTn(a, 3) == 0.5
 end
