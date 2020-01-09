@@ -5,4 +5,5 @@ using Test
     include("test-utilities.jl")
     include("test-densities.jl")
     include("test-projections.jl")
+    include("test-loadElser.jl")
 end
