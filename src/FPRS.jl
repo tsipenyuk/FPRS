@@ -9,6 +9,7 @@ include("utilities.jl")
 include("densities.jl")
 include("projections.jl")
 include("loadElser.jl")
+include("bookkeeping.jl")
 
 export
 # Utilities
@@ -30,5 +31,8 @@ eTa
 eTn
 # loadElser
 loadElser
+# bookkeeping
+pri
+lpri
 
 end # module
