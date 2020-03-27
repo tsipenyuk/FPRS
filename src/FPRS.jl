@@ -16,7 +16,9 @@ export
 randBall
 randRotationMatrix
 # Densities
+genGaussWGrid
 genGauss
+genRandGaussWGrid
 genRandGauss
 # Projections
 pM

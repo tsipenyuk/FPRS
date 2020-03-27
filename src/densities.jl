@@ -1,5 +1,5 @@
 # TODO test jldoctests
-function genGauss(aG, mG, AG;
+function genGaussWGrid(aG, mG, AG;
                   xmin=nothing, xmax=nothing, nPts=nothing)
     """
     Calculate sum of Gaussians given amplitudes, means, and covariance matrices.
@@ -27,7 +27,7 @@ function genGauss(aG, mG, AG;
     - `nPts[= 67 .* ones(Int64, nDims)]`: number of discretization points
                                           along each dimension
 
-    # Examples
+    # Examples for GenGauss (different handle for this function, cf. below)
     ```jldoctest
     julia> # Generate 3 Gaussians
     julia> aG = ones(3);
@@ -82,6 +82,7 @@ function genGauss(aG, mG, AG;
     # One-dimensional case
     if nDims == 1
         x1 = range(xmin[1], stop=xmax[1], length=nPts[1]);
+        xGrid = (x1); # To return underlying grid in the end
         g = zeros(nPts[1]);
 
         for iG = 1:nGauss
@@ -94,6 +95,7 @@ function genGauss(aG, mG, AG;
     if nDims == 2
         x1 = range(xmin[1], stop=xmax[1], length=nPts[1]);
         x2 = range(xmin[2], stop=xmax[2], length=nPts[2]);
+        xGrid = (x1, x2); # To return underlying grid in the end
         g = zeros(nPts[1], nPts[2]);
 
         for iG = 1:nGauss
@@ -110,6 +112,7 @@ function genGauss(aG, mG, AG;
         x1 = range(xmin[1], stop=xmax[1], length=nPts[1]);
         x2 = range(xmin[2], stop=xmax[2], length=nPts[2]);
         x3 = range(xmin[3], stop=xmax[3], length=nPts[3]);
+        xGrid = (x1, x2, x3); # To return underlying grid in the end
         g = zeros(nPts[1], nPts[2], nPts[3]);
 
         for iG = 1:nGauss
@@ -122,19 +125,29 @@ function genGauss(aG, mG, AG;
         end
     end
 
-    return g
+    return g, xGrid
 end
 
 
-function genRandGauss(; nGauss=30,
-                      nPts = [67; 67],
-                      aGmin = 0.2,
-                      aGmax = 2.0,
-                      mGrad = 0.6,
-                      AGmin = 100,
-                      AGmax = 800,
-                      randSeed = nothing,
-                      suppShape = "ball")
+function genGauss(aG, mG, AG;
+                  xmin=nothing, xmax=nothing, nPts=nothing)
+    """
+    Return only the density of genGaussWGrid (do not return the grid)
+    """
+    res, ~ = genGaussWGrid(aG, mG, AG; xmin=xmin, xmax=xmax, nPts=nPts)
+    return res
+end
+
+
+function genRandGaussWGrid(; nGauss=30,
+                          nPts = [67; 67],
+                          aGmin = 0.2,
+                          aGmax = 2.0,
+                          mGrad = 0.6,
+                          AGmin = 100,
+                          AGmax = 800,
+                          randSeed = nothing,
+                          suppShape = "ball")
     """
     Evaluate sum of Gaussians with random amplitudes, means, and covariance matrices.
 
@@ -245,5 +258,30 @@ function genRandGauss(; nGauss=30,
         end
     end
     
-    return genGauss(aG, mG, AG; nPts=nPts)
+    return genGaussWGrid(aG, mG, AG; nPts=nPts)
 end
+
+
+function genRandGauss(; nGauss=30,
+                      nPts = [67; 67],
+                      aGmin = 0.2,
+                      aGmax = 2.0,
+                      mGrad = 0.6,
+                      AGmin = 100,
+                      AGmax = 800,
+                      randSeed = nothing,
+                      suppShape = "ball")
+    res, ~ = genRandGaussWGrid(; nGauss=nGauss,
+                              nPts = nPts,
+                              aGmin = aGmin,
+                              aGmax = aGmax,
+                              mGrad = mGrad,
+                              AGmin = AGmin,
+                              AGmax = AGmax,
+                              randSeed = randSeed,
+                              suppShape = suppShape)
+    return res
+end
+
+
+
