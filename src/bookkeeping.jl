@@ -1,5 +1,5 @@
 """
-Structures to keep information sorted
+Structures to keep information sorted; for 2D arrays
 """
 mutable struct pri
     g::Array{Float64,2}     # approximation 
@@ -52,3 +52,28 @@ lpri(gInit, nSteps, name="NoName") =
         zeros(nSteps), zeros(nSteps), zeros(nSteps), zeros(nSteps), zeros(nSteps),
         name)
 
+
+"""
+    Structures to keep information sorted; for 1D arrays
+"""
+mutable struct pri1D
+    g::Array{Float64,1}     # approximation 
+    gInit::Array{Float64,1} # initial state
+    # Energies
+    Ep::Array{Float64,1}
+    Em::Array{Float64,1}
+    E::Array{Float64,1}
+    # Additional/optional quantities for debugging etc
+    p::Array{Float64,1}
+    q::Array{Float64,1}
+    d::Array{Float64,1}
+    d2::Array{Float64,1}
+    name::String
+end
+
+pri1D(gInit, nSteps, name="NoName") =
+    pri(gInit, gInit,
+        zeros(nSteps), zeros(nSteps), zeros(nSteps),
+        gInit, gInit,
+        zeros(nSteps), zeros(nSteps),
+        name)

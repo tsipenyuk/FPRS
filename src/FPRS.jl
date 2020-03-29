@@ -36,6 +36,7 @@ loadElser
 loadElserPure
 # bookkeeping
 pri
+pri1D
 lpri
 
 end # module
