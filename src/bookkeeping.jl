@@ -57,17 +57,17 @@ lpri(gInit, nSteps, name="NoName") =
     Structures to keep information sorted; for 1D arrays
 """
 mutable struct pri1D
-    g::Array{Float64,1}     # approximation 
-    gInit::Array{Float64,1} # initial state
+    g      # approximation 
+    gInit  # initial state
     # Energies
-    Ep::Array{Float64,1}
-    Em::Array{Float64,1}
-    E::Array{Float64,1}
+    Ep 
+    Em 
+    E 
     # Additional/optional quantities for debugging etc
-    p::Array{Float64,1}
-    q::Array{Float64,1}
-    d::Array{Float64,1}
-    d2::Array{Float64,1}
+    p 
+    q 
+    d 
+    d2 
     name::String
 end
 
