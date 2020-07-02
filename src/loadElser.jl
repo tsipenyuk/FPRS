@@ -24,7 +24,8 @@ function loadElser(fname::String)
     M = 128
     sqrtI = zeros(M,M)
     sqrtI[:,1:64] = fIn[:,:]
-    sqrtI[:,end:-1:66] = fIn[:,2:end]
+    sqrtI[1,end:-1:66] = fIn[1,2:end]
+    sqrtI[2:end, end:-1:66] = fIn[end:-1:2,2:end]
     return sqrtI, nAtoms, suppSize
 end
 
@@ -32,6 +33,9 @@ function loadElserPure(fname::String)
     fInOriginal = readdlm(fname,'\t')
     fIn = sqrt.(fInOriginal) # to match c++ and julia FFTW normalization constants
     fIn = transpose(fIn) # To match julia's rfft format
+    M = 128
+    Mh = 64
+    fmag = zeros(Mh, M)
     fmag[1:64,:] = fIn
     return fmag
 end
